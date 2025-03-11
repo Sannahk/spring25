@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <script src="/week3/sannah_kumar/script.js"></script>
+    <title>Sannah Kumar loves COOOKKIEEEESSSS</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            background-color: pink;
+            text-align: center;
+        }
+
+        h1 {
+            color: black;
+            font-size: 50px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        p {
+            color: brown;
+            font-size: 40px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        h3 {
+            font-size: 20px;
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        #counter {
+            font-size: 80px;
+            font-weight: bold;
+            color: darkred;
+        }
+
+        #message {
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: brown;
+        }
+
+        #timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: red;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 10px 15px;
+            background-color: #ffcc00;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #ff9900;
+        }
+
+        img {
+            width: 300px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.1s;
+        }
+
+        img:active {
+            transform: scale(0.9);
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Sannah Kumar Eating Cookies Challenge 🍪</h1>
+    <p>Time Left: <span id="timer">30</span> seconds</p>
+    <button id="startButton" onclick="startGame()">Start Timer</button>
+
+    <h1><span id="counter">0</span> cookies</h1>
+    <p id="message">Press start to begin!</p>
+
+    <h3>Every time you CLICK on the cookie below, the counter increases by ONE. 
+        You have thirty seconds to eat as many as you can! 
+        (If you get above 200, contact 646-596-2889 for a free cookie 😉)
+    </h3>
+
+    <img id="cookieImage" src="https://img.freepik.com/free-photo/chocolate-chip-cookies-isolated-white-background-ai-generative_123827-24070.jpg" 
+        onclick="addOneToCounter()" class="disabled" />
+
+    <script>
+        let timer;
+        let timeLeft = 30;
+        let gameActive = false;
+
+        function startGame() {
+            if (gameActive) return;
+
+            gameActive = true;
+            document.getElementById("cookieImage").classList.remove("disabled");
+            document.getElementById("startButton").disabled = true;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").innerText = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function addOneToCounter() {
+            if (!gameActive) return;
+
+            let counterElement = document.getElementById("counter");
+            let messageElement = document.getElementById("message");
+
+            let newValue = parseInt(counterElement.innerText) + 1;
+            counterElement.innerText = newValue;
+
+            let messages = {
+                10: "5 cookies! EASY WORK 🎉",
+                50: "Amazing! DAMNN she ate 50 cookies! 🍪",
+                100: "GGOOODDDMANNN She is a cookie master! 100 cookies! 🏆"
+            };
+
+            if (messages[newValue]) {
+                messageElement.innerText = messages[newValue]; 
+                confettiEffect();
+
+                setTimeout(() => {
+                    messageElement.innerText = "eat eat eat eat eat ";
+                }, 3000);
+            }
+        }
+
+        function endGame() {
+            gameActive = false;
+            document.getElementById("cookieImage").classList.add("disabled");
+            document.getElementById("message").innerText = "Time's up! 🍪";
+        }
+
+        function confettiEffect() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+    </script>
+
+</body>
+</html>
