@@ -2,52 +2,43 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-const { Server } = require("socket.io");
+const { Server } = require('socket.io');
 const io = new Server(server);
+const mongoose = require('mongoose');
+const messageModel = require('./models/message');
 
+mongoose.connect('mongodb://localhost:27017/chatapp')  // or Atlas string
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.error('MongoDB connection error:', err));
+
+
+// Serve index.html
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
+// Socket.io setup
 io.on('connection', (socket) => {
   console.log('a user connected');
-});
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
-});
+  socket.on('chat message', (msg) => {
+    console.log('message: ' + msg);
+    io.emit('chat message', msg); 
+  });
 
-const httpProxy = require("http-proxy");
-
-httpProxy
-  .createProxyServer({
-    target: "http://localhost:3000",
-    ws: true,
-  })
-  .listen(80);
-
-
-io.on('connection', (socket) => {
-  console.log('a user connected');
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
 });
 
-io.on('connection', (socket) => {
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
-  });
+// Start the server
+server.listen(3000, () => {
+  console.log('listening on *:3000');
 });
 
-io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' });
 
-io.on('connection', (socket) => {
-  socket.broadcast.emit('hi');
-});
 
-io.on('connection', (socket) => {
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
+app.get('/messages', async (req, res) => {
+  const messages = await messageModel.find();
+  res.json(messages);
 });
